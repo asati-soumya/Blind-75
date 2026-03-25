@@ -1,0 +1,79 @@
+Leetcode Link - https://leetcode.com/problems/contains-duplicate/description/
+
+🔹 Problem
+
+Given an array nums, return true if any value appears at least twice, otherwise false.
+
+🧠 1. Brute Force Approach
+💡 Idea:
+
+Compare every element with every other element.
+
+⏱ Complexity:
+Time: O(n²)
+Space: O(1)
+
+bool containsDuplicate(vector<int>& nums) {
+    int n = nums.size();
+    for(int i = 0; i < n; i++) {
+        for(int j = i + 1; j < n; j++) {
+            if(nums[i] == nums[j]) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+📌 When to use:
+Very small input size (n < 1000)
+When no extra space is allowed
+As a starting point in interviews
+
+⚡ 2. Better Approach (Sorting)
+💡 Idea:
+
+Sort the array → duplicates will be adjacent.
+
+⏱ Complexity:
+Time: O(n log n)
+Space: O(1) (if in-place sort)
+✅ Code:
+bool containsDuplicate(vector<int>& nums) {
+    sort(nums.begin(), nums.end());
+    
+    for(int i = 1; i < nums.size(); i++) {
+        if(nums[i] == nums[i - 1]) {
+            return true;
+        }
+    }
+    return false;
+}
+📌 When to use:
+When modifying array is allowed
+Memory is constrained
+Better than brute but not optimal
+
+🚀 3. Optimal Approach (Hash Set)
+💡 Idea:
+
+Use a set / unordered_set to track seen elements.
+
+⏱ Complexity:
+Time: O(n) (average)
+Space: O(n)
+✅ Code:
+bool containsDuplicate(vector<int>& nums) {
+    unordered_set<int> seen;
+    
+    for(int num : nums) {
+        if(seen.count(num)) {
+            return true;
+        }
+        seen.insert(num);
+    }
+    return false;
+}
+📌 When to use:
+Best choice in most interviews
+When extra space is allowed
+Need fastest solution
