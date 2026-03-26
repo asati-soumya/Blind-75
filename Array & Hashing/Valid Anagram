@@ -1,0 +1,95 @@
+🔹 Problem: Valid Anagram
+
+Given two strings s and t, return true if t is an anagram of s.
+
+👉 Anagram = same characters with same frequency, order doesn’t matter
+Example: "listen" and "silent" ✅
+
+🧠 1. Brute Force Approach
+💡 Idea:
+
+For each character in s, try to find and remove it from t.
+
+⏱ Complexity:
+Time: O(n²)
+Space: O(1) (if modifying string)
+✅ Code (C++):
+bool isAnagram(string s, string t) {
+    if(s.size() != t.size()) return false;
+
+    for(int i = 0; i < s.size(); i++) {
+        bool found = false;
+        for(int j = 0; j < t.size(); j++) {
+            if(s[i] == t[j]) {
+                t[j] = '#'; // mark as used
+                found = true;
+                break;
+            }
+        }
+        if(!found) return false;
+    }
+    return true;
+}
+📌 When to use:
+Very small strings
+No extra data structures allowed
+Just to explain baseline in interview
+
+⚡ 2. Better Approach (Sorting)
+💡 Idea:
+
+Sort both strings → if equal, they are anagrams.
+
+⏱ Complexity:
+Time: O(n log n)
+Space: O(1) (ignoring sort space)
+✅ Code:
+bool isAnagram(string s, string t) {
+    if(s.size() != t.size()) return false;
+
+    sort(s.begin(), s.end());
+    sort(t.begin(), t.end());
+
+    return s == t;
+}
+📌 When to use:
+Simple and clean
+When modifying input is allowed
+Good for interviews if you want quick correctness
+
+🚀 3. Optimal Approach (Frequency Count / Hashing)
+💡 Idea:
+
+Count frequency of characters and compare.
+
+✅ Approach A: Using Array (Best for lowercase letters)
+⏱ Complexity:
+Time: O(n)
+Space: O(1) (fixed size 26)
+bool isAnagram(string s, string t) {
+    if(s.size() != t.size()) return false;
+
+    vector<int> freq(26, 0);
+
+    for(char c : s) freq[c - 'a']++;
+    for(char c : t) freq[c - 'a']--;
+
+    for(int count : freq) {
+        if(count != 0) return false;
+    }
+    return true;
+}
+✅ Approach B: Using Hash Map (for Unicode / general case)
+bool isAnagram(string s, string t) {
+    if(s.size() != t.size()) return false;
+
+    unordered_map<char, int> freq;
+
+    for(char c : s) freq[c]++;
+    for(char c : t) {
+        if(freq[c] == 0) return false;
+        freq[c]--;
+    }
+
+    return true;
+}
