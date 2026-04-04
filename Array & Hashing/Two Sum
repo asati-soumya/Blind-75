@@ -1,0 +1,117 @@
+🔹 Problem: Two Sum
+Given an array nums and a target, return indices of two numbers such that:
+nums[i] + nums[j] = target
+
+🧠 1. Brute Force Approach
+💡 Idea:
+
+Check every pair.
+
+⏱ Complexity:
+Time: O(n²)
+Space: O(1)
+
+✅ Code (C++):
+vector<int> twoSum(vector<int>& nums, int target) {
+    int n = nums.size();
+    for(int i = 0; i < n; i++) {
+        for(int j = i + 1; j < n; j++) {
+            if(nums[i] + nums[j] == target) {
+                return {i, j};
+            }
+        }
+    }
+    return {};
+}
+
+❌ Cons:
+Very slow for large inputs
+Not scalable (fails for n ≥ 10⁵)
+Only useful as a starting point
+
+📌 When to use:
+Explaining the baseline in the interview
+Very small arrays
+
+⚡ 2. Better Approach (Sorting + Two Pointers)
+💡 Idea:
+
+Sort the array, then use two pointers.
+
+⚠️ Problem: Sorting changes indices → must store original indices.
+
+✅ Code:
+vector<int> twoSum(vector<int>& nums, int target) {
+    vector<pair<int,int>> arr;
+    for(int i = 0; i < nums.size(); i++) {
+        arr.push_back({nums[i], i});
+    }
+
+    sort(arr.begin(), arr.end());
+
+    int left = 0, right = arr.size() - 1;
+
+    while(left < right) {
+        int sum = arr[left].first + arr[right].first;
+
+        if(sum == target) {
+            return {arr[left].second, arr[right].second};
+        }
+        else if(sum < target) left++;
+        else right--;
+    }
+
+    return {};
+}
+⏱ Complexity:
+Time: O(n log n)
+Space: O(n)
+❌ Cons:
+Loses original order → need extra structure
+Not ideal if indices must be returned (extra work)
+Slower than optimal
+Modifies data (if not copied)
+📌 When to use:
+When an array can be sorted
+When you don’t care about the original order
+Useful stepping stone in interview
+
+🚀 3. Optimal Approach (Hash Map)
+💡 Idea:
+
+Store numbers and their indices while traversing.
+
+👉 For each element:
+
+Check if (target - num) already exists
+
+✅ Code:
+vector<int> twoSum(vector<int>& nums, int target) {
+    unordered_map<int, int> mp; // value -> index
+
+    for(int i = 0; i < nums.size(); i++) {
+        int complement = target - nums[i];
+
+        if(mp.count(complement)) {
+            return {mp[complement], i};
+        }
+
+        mp[nums[i]] = i;
+    }
+
+    return {};
+}
+
+⏱ Complexity:
+Time: O(n)
+Space: O(n)
+
+❌ Cons:
+Extra memory required
+Hash collisions (rare but theoretical worst-case O(n²))
+Not suitable if memory is strictly limited
+
+📌 When to use:
+Best choice in interviews
+Large datasets
+Need indices quickly
