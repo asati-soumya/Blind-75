@@ -1,0 +1,152 @@
+🔹 Problem: Product of Array Except Self
+Given an array nums, return an array answer such that:
+
+answer[i] = product of all elements except nums[i]
+
+👉 Constraints:
+
+❌ No division allowed (important!)
+Must run in O(n)
+
+🧠 1. Brute Force Approach
+💡 Idea:
+
+For each index, multiply all other elements.
+
+⏱ Complexity:
+Time: O(n²)
+Space: O(1) (excluding output)
+
+✅ Code:
+vector<int> productExceptSelf(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> result(n, 1);
+
+    for(int i = 0; i < n; i++) {
+        int prod = 1;
+        for(int j = 0; j < n; j++) {
+            if(i != j) {
+                prod *= nums[j];
+            }
+        }
+        result[i] = prod;
+    }
+
+    return result;
+}
+
+❌ Cons:
+Very slow for large input
+Recomputes products repeatedly
+Not acceptable in interviews
+
+📌 When to use:
+Only to explain baseline
+
+⚡ 2. Better Approach (Using Division)
+💡 Idea:
+Compute total product
+Divide by each element
+
+⏱ Complexity:
+Time: O(n)
+Space: O(1)
+
+✅ Code:
+vector<int> productExceptSelf(vector<int>& nums) {
+    int total = 1;
+    for(int num : nums) total *= num;
+
+    vector<int> result;
+    for(int num : nums) {
+        result.push_back(total / num);
+    }
+
+    return result;
+}
+
+❌ Cons (CRITICAL):
+❌ Fails when zeros are present
+❌ Division not allowed (as per problem)
+❌ Precision issues (in some languages)
+
+📌 When to use:
+Only if interviewer allows division (rare)
+
+🚀 3. Optimal Approach (Prefix + Suffix Arrays)
+💡 Idea:
+prefix[i] = product of elements before i
+suffix[i] = product of elements after i
+
+Then:
+
+answer[i] = prefix[i] * suffix[i]
+
+⏱ Complexity:
+Time: O(n)
+Space: O(n)
+
+✅ Code:
+vector<int> productExceptSelf(vector<int>& nums) {
+    int n = nums.size();
+
+    vector<int> prefix(n, 1), suffix(n, 1), result(n);
+
+    for(int i = 1; i < n; i++) {
+        prefix[i] = prefix[i - 1] * nums[i - 1];
+    }
+
+    for(int i = n - 2; i >= 0; i--) {
+        suffix[i] = suffix[i + 1] * nums[i + 1];
+    }
+
+    for(int i = 0; i < n; i++) {
+        result[i] = prefix[i] * suffix[i];
+    }
+
+    return result;
+}
+
+❌ Cons:
+Uses extra space O(n)
+Can be optimized further
+
+📌 When to use:
+When clarity is more important than optimization
+
+🚀🚀 4. Best Optimal (Space Optimized)
+💡 Idea:
+Use result array to store prefix
+Then multiply with suffix on the fly
+
+⏱ Complexity:
+Time: O(n) ✅
+Space: O(1) (excluding output)
+
+✅ Code:
+vector<int> productExceptSelf(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> result(n, 1);
+
+    // prefix
+    for(int i = 1; i < n; i++) {
+        result[i] = result[i - 1] * nums[i - 1];
+    }
+
+    // suffix
+    int suffix = 1;
+    for(int i = n - 1; i >= 0; i--) {
+        result[i] *= suffix;
+        suffix *= nums[i];
+    }
+
+    return result;
+}
+
+❌ Cons:
+Slightly tricky to understand at first
+Requires careful explanation in interview
+
+📌 When to use:
+Best solution for interviews
+Meets all constraints
