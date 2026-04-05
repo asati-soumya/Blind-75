@@ -1,0 +1,171 @@
+🔹 Problem: Top K Frequent Elements
+Given an integer array nums and an integer k, return the k most frequent elements.
+
+👉 Example:
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+
+🧠 1. Brute Force Approach
+💡 Idea:
+Count frequency
+Repeatedly find max frequency element k times
+
+⏱ Complexity:
+Time: O(n * k) or worse (if scanning repeatedly)
+Space: O(n)
+
+✅ Code:
+vector<int> topKFrequent(vector<int>& nums, int k) {
+    unordered_map<int, int> freq;
+    for(int num : nums) freq[num]++;
+
+    vector<int> result;
+
+    for(int i = 0; i < k; i++) {
+        int maxFreq = -1, element;
+
+        for(auto& it : freq) {
+            if(it.second > maxFreq) {
+                maxFreq = it.second;
+                element = it.first;
+            }
+        }
+
+        result.push_back(element);
+        freq[element] = -1; // mark used
+    }
+
+    return result;
+}
+
+❌ Cons:
+Inefficient (re-scans map multiple times)
+Doesn’t scale well
+Not interview-preferred
+
+📌 When to use:
+Just to explain baseline thinking
+
+
+⚡ 2. Better Approach (Sorting by Frequency)
+💡 Idea:
+Count frequencies
+Store in vector
+Sort by frequency (descending)
+
+⏱ Complexity:
+Time: O(n log n)
+Space: O(n)
+
+✅ Code:
+vector<int> topKFrequent(vector<int>& nums, int k) {
+    unordered_map<int, int> freq;
+    for(int num : nums) freq[num]++;
+
+    vector<pair<int,int>> arr(freq.begin(), freq.end());
+
+    sort(arr.begin(), arr.end(), [](auto& a, auto& b) {
+        return a.second > b.second;
+    });
+
+    vector<int> result;
+    for(int i = 0; i < k; i++) {
+        result.push_back(arr[i].first);
+    }
+
+    return result;
+}
+
+❌ Cons:
+Sorting all elements is unnecessary
+Slower than optimal for large input
+Doesn’t exploit the “top k” nature efficiently
+
+📌 When to use:
+Simple and readable
+Acceptable if constraints are moderate
+
+
+🚀 3. Optimal Approach (Min Heap)
+💡 Idea:
+Keep a min heap of size k
+Store {frequency, element}
+Remove smallest when size > k
+
+⏱ Complexity:
+Time: O(n log k)
+Space: O(n)
+
+✅ Code:
+vector<int> topKFrequent(vector<int>& nums, int k) {
+    unordered_map<int, int> freq;
+    for(int num : nums) freq[num]++;
+
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> minHeap;
+
+    for(auto& it : freq) {
+        minHeap.push({it.second, it.first});
+        if(minHeap.size() > k) {
+            minHeap.pop();
+        }
+    }
+
+    vector<int> result;
+    while(!minHeap.empty()) {
+        result.push_back(minHeap.top().second);
+        minHeap.pop();
+    }
+
+    return result;
+}
+
+❌ Cons:
+Slightly complex to write
+Heap operations overhead
+Not strictly O(n)
+
+📌 When to use:
+When k << n (very efficient)
+Most practical optimal solution
+
+🚀🚀 4. Best Optimal (Bucket Sort)
+💡 Idea:
+Frequency range is 1 → n
+Create buckets where index = frequency
+Put elements into corresponding buckets
+
+⏱ Complexity:
+Time: O(n) ✅
+Space: O(n)
+
+✅ Code:
+vector<int> topKFrequent(vector<int>& nums, int k) {
+    unordered_map<int, int> freq;
+    for(int num : nums) freq[num]++;
+
+    vector<vector<int>> bucket(nums.size() + 1);
+
+    for(auto& it : freq) {
+        bucket[it.second].push_back(it.first);
+    }
+
+    vector<int> result;
+
+    for(int i = bucket.size() - 1; i >= 0 && result.size() < k; i--) {
+        for(int num : bucket[i]) {
+            result.push_back(num);
+            if(result.size() == k) break;
+        }
+    }
+
+    return result;
+}
+
+❌ Cons:
+Less intuitive
+Uses extra memory (bucket array)
+Slightly harder to explain
+
+📌 When to use:
+When the interviewer asks for O(n) solution
+When constraints are large
